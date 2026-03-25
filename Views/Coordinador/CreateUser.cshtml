@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Registrar Usuario";
+    Layout = "_LayoutCoordinador";
+}
+
+<div class="fade-in d-flex flex-column gap-4">
+
+    <div class="bg-surface p-4 rounded-4 border-theme shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h3 class="txt-title fw-bold mb-1">Registrar Nuevo Usuario</h3>
+            <div class="d-flex align-items-center gap-3 mt-2 txt-body text-xs">
+                <span>Alta de personal administrativo, soporte o coordinación.</span>
+            </div>
+        </div>
+        <div class="text-end d-flex flex-column align-items-md-end gap-2">
+            <a href="@Url.Action("Catalogos", "Coordinador")" class="btn btn-sm btn-ghost-sep border border-theme shadow-sm mt-1 fw-semibold">
+                <i class="bi bi-arrow-left me-1"></i> Volver a Catálogos
+            </a>
+        </div>
+    </div>
+
+    <form action="/Coordinador/CreateUser" method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-4">
+            <div class="col-lg-8 d-flex flex-column gap-4">
+                
+                <div class="admin-card-white p-4 p-md-5 rounded-4 border-theme shadow-sm bg-white">
+                    <h6 class="txt-title fw-bold mb-4 border-bottom border-theme pb-2">
+                        DATOS DEL USUARIO
+                    </h6>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label class="txt-body text-xs fw-bold tracking-wide mb-2">NOMBRE(S) <span class="text-danger">*</span></label>
+                            <input name="FirstName" type="text" class="form-control search-input-custom ps-3" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt-body text-xs fw-bold tracking-wide mb-2">APELLIDO PATERNO <span class="text-danger">*</span></label>
+                            <input name="LastNamePaternal" type="text" class="form-control search-input-custom ps-3" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="txt-body text-xs fw-bold tracking-wide mb-2">APELLIDO MATERNO</label>
+                            <input name="LastNameMaternal" type="text" class="form-control search-input-custom ps-3" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="txt-body text-xs fw-bold tracking-wide mb-2">CORREO INSTITUCIONAL <span class="text-danger">*</span></label>
+                            <input name="Email" type="email" class="form-control search-input-custom ps-3" placeholder="usuario@uttn.mx" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="txt-body text-xs fw-bold tracking-wide mb-2">DEPARTAMENTO / ÁREA</label>
+                            <input name="Department" type="text" class="form-control search-input-custom ps-3" placeholder="Ej. Sistemas y Soporte" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="admin-card-white p-4 p-md-5 rounded-4 shadow-sm h-100 d-flex flex-column bg-white border-theme">
+                    <h6 class="txt-title fw-bold mb-4 border-bottom border-theme pb-2">
+                        PERMISOS Y ACCESO
+                    </h6>
+
+                    <div class="mb-4">
+                        <label class="txt-body text-xs fw-bold tracking-wide mb-2">ROL EN EL SISTEMA <span class="text-danger">*</span></label>
+                        <select name="Role" class="form-select bg-app border-theme txt-title fw-semibold py-2" required>
+                            <option value="">-- Seleccionar Rol --</option>
+                            <option value="ADMINISTRADOR">Administrador Global</option>
+                            <option value="COORDINADOR">Coordinador Académico</option>
+                            <option value="SOPORTE">Soporte Técnico</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="txt-body text-xs fw-bold tracking-wide mb-2">NUEVO USUARIO DE ACCESO <span class="text-danger">*</span></label>
+                        <input name="Username" type="text" class="form-control search-input-custom ps-3" autocomplete="off" required />
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="txt-body text-xs fw-bold tracking-wide mb-2">CONTRASEÑA TEMPORAL <span class="text-danger">*</span></label>
+                        <input name="Password" type="password" class="form-control search-input-custom ps-3" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required />
+                    </div>
+
+                    <div class="mt-auto pt-4 border-top border-theme d-flex flex-column gap-3">
+                        <button type="submit" class="btn btn-primary-sep bg-primary-900 w-100 fw-bold py-3 shadow-sm text-white">
+                            Crear Usuario
+                        </button>
+                        <a href="@Url.Action("Catalogos", "Coordinador")" class="btn btn-ghost-sep border border-theme w-100 py-2 shadow-sm text-body fw-semibold">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

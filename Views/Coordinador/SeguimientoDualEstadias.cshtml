@@ -1,0 +1,259 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Asignaciones";
+    Layout = "_LayoutCoordinador";
+    
+    // Captura de variables por URL para mantener el estado de los filtros (opcional)
+    var search = Context.Request.Query["search"].ToString();
+}
+
+<div class="d-flex flex-column gap-4 fade-in">
+
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert bg-success-100 border border-success-700 text-success-700 rounded-3 alert-dismissible fade show shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert bg-error-100 border border-error border-opacity-25 txt-error rounded-3 alert-dismissible fade show shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="bg-surface p-4 rounded-4 border-theme shadow-sm d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+        <form method="get" class="d-flex flex-column flex-md-row gap-3 flex-grow-1 w-100" style="max-width: 1000px;">
+            
+            <div class="position-relative search-wrapper flex-grow-1">
+                <i class="bi bi-search position-absolute search-icon-left txt-body"></i>
+                <input type="text" name="search" class="form-control search-input-custom tab-search" placeholder="Buscar por alumno o matrícula..." value="@search">
+            </div>
+            
+            <select name="status" class="form-select bg-app border-theme txt-title fw-bold tab-filter" style="width: auto; min-width: 160px;">
+                <option value="">Estado</option>
+                <option value="ASSIGNED">Asignado</option>
+                <option value="IN_PROGRESS">En Progreso</option>
+                <option value="COMPLETED">Completado</option>
+            </select>
+            
+            <select name="teacher" class="form-select bg-app border-theme txt-title fw-bold tab-filter" style="width: auto; min-width: 200px;">
+                <option value="">Todos los Profesores</option>
+                <option value="1">Dr. Gabriel López</option>
+                <option value="2">Ing. Juan Pérez Martínez</option>
+            </select>
+
+            <div class="d-flex gap-2 flex-shrink-0">
+                <button type="submit" class="btn btn-primary-sep d-flex align-items-center gap-2 shadow-sm bg-primary-900">
+                    <i class="bi bi-funnel-fill"></i> Filtrar
+                </button>
+                <a href="@Url.Action("Asignaciones")" class="btn btn-ghost-sep d-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-x-lg"></i> Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="admin-card-white p-0 rounded-4 border-theme shadow-sm overflow-hidden d-flex flex-column">
+        <div class="table-responsive bg-surface" style="min-height: 300px;">
+            <table class="table table-borderless align-middle mb-0" style="min-width: 1100px;">
+                <thead class="admin-table-header">
+                    <tr>
+                        <th class="py-3 px-4" width="25%">Estudiante</th>
+                        <th class="py-3" width="20%">Programa / Org.</th>
+                        <th class="py-3" width="20%">Supervisor</th>
+                        <th class="py-3 text-center" width="10%">Estado</th>
+                        <th class="py-3 text-center" width="15%">Horas</th>
+                        <th class="py-3 text-end px-4" width="10%">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr class="border-bottom border-theme hover-bg-app data-row">
+                        <td class="px-4 py-3 search-target">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-md avatar-sm bg-accent-light txt-primary-dark fw-bold flex-shrink-0">RC</div>
+                                <div>
+                                    <div class="txt-title fw-bold text-sm mb-1">Roberto Carlos Perez Cadena</div>
+                                    <div class="txt-body text-xs">Mat: 24001504</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="txt-title fw-bold text-sm mb-1">Estadías Profesionales</div>
+                            <span class="badge bg-app border border-theme txt-title text-xxs px-2 py-1">CORNING OPTICAL</span>
+                        </td>
+                        <td>
+                            <div class="txt-title fw-bold text-sm">Ing. Juan Pérez Martínez</div>
+                            <div class="txt-body text-xs">Asignado</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge status-aceptado text-xxs px-2 py-1 shadow-sm">EN PROGRESO</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="txt-title fw-bold text-sm mb-1">320 / 600 hrs</div>
+                            <div class="progress" style="height: 6px; width: 100px; margin: 0 auto; background-color: var(--bg-main);">
+                                <div class="progress-bar bg-primary-900" style="width: 53%"></div>
+                            </div>
+                        </td>
+                        <td class="text-end px-4">
+                            <button class="btn btn-sm btn-ghost-sep px-2 py-1 text-primary" data-bs-toggle="modal" data-bs-target="#modalReasignar">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                            <button class="btn btn-sm btn-ghost-sep px-2 py-1 text-body">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr class="border-bottom border-theme hover-bg-app data-row">
+                        <td class="px-4 py-3 search-target">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-md avatar-sm bg-app border border-theme txt-title fw-bold flex-shrink-0">LA</div>
+                                <div>
+                                    <div class="txt-title fw-bold text-sm mb-1">Luis Ángel García</div>
+                                    <div class="txt-body text-xs">Mat: 24001892</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="txt-title fw-bold text-sm mb-1">Educación Dual</div>
+                            <span class="badge bg-app border border-theme txt-title text-xxs px-2 py-1">NIDEC MOTORS</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-error-100 txt-error border border-error border-opacity-25 text-xxs px-2 py-1">SIN ASIGNAR</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-app txt-body border border-theme text-xxs px-2 py-1 shadow-sm">REGISTRADO</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="txt-title fw-bold text-sm mb-1">0 / 480 hrs</div>
+                            <div class="progress" style="height: 6px; width: 100px; margin: 0 auto; background-color: var(--bg-main);">
+                                <div class="progress-bar bg-primary-900" style="width: 0%"></div>
+                            </div>
+                        </td>
+                        <td class="text-end px-4">
+                            <button class="btn btn-sm btn-ghost-sep px-2 py-1 text-primary" data-bs-toggle="modal" data-bs-target="#modalReasignar">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </button>
+                            <button class="btn btn-sm btn-ghost-sep px-2 py-1 text-body">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-surface p-3 border-top border-theme d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <span class="txt-body text-xs fw-bold">Mostrar:</span>
+                <select class="form-select form-select-sm bg-app border-theme txt-title fw-bold rows-per-page" style="width: 70px; cursor: pointer;">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                </select>
+                <div class="txt-body text-xs fw-bold tracking-wide table-info">Mostrando 1 a 2 de 2 registros...</div>
+            </div>
+            <nav aria-label="Navegación de tabla">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled">
+                        <a class="page-link page-link-custom" href="#"><i class="bi bi-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link page-link-custom" href="#">1</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link page-link-custom" href="#"><i class="bi bi-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalReasignar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-theme shadow-sm rounded-4 overflow-hidden bg-surface">
+            <form action="@Url.Action("ReassignSupervisor", "Coordinador")" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="enrollmentId" id="inputEnrollmentId" value="1" />
+                
+                <div class="modal-header border-bottom border-theme p-4">
+                    <h5 class="modal-title txt-title fw-bold">
+                        <i class="bi bi-arrow-left-right me-2 text-primary"></i> Asignar Supervisor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body p-4">
+                    <p class="txt-body text-sm mb-4">Seleccione al docente que será responsable del seguimiento del estudiante.</p>
+                    
+                    <div class="mb-3">
+                        <label class="txt-body text-xs fw-bold tracking-wide mb-2 d-block">DOCENTE DISPONIBLE</label>
+                        <select name="newTeacherId" class="form-select bg-app border-theme txt-title fw-bold py-2" required>
+                            <option value="">-- Seleccionar Docente --</option>
+                            <option value="1">Dr. Gabriel López</option>
+                            <option value="2">Ing. Juan Pérez Martínez</option>
+                            <option value="3">Mtra. Ana Martínez Ruiz</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-top border-theme bg-app p-3">
+                    <button type="button" class="btn btn-ghost-sep" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-sep bg-primary-900 shadow-sm">Guardar Asignación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos de paginación heredados de tu vista Catálogos */
+    .page-link-custom {
+        color: var(--text-title);
+        background-color: var(--white);
+        border-color: var(--border-color);
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .page-link-custom:hover {
+        background-color: var(--bg-main);
+        color: var(--primary-900);
+    }
+    .page-item.active .page-link-custom {
+        background-color: var(--primary-900);
+        border-color: var(--primary-900);
+        color: var(--white);
+    }
+    .page-item.disabled .page-link-custom {
+        color: var(--text-body);
+        background-color: var(--bg-main);
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Animación para desaparecer alertas
+            setTimeout(function () {
+                $('.alert-dismissible').fadeOut('slow', function() {
+                    $(this).remove();
+                });
+            }, 4000);
+
+            // Ejemplo para pasar el ID al modal si los generas dinámicamente con un foreach en el futuro
+            $('#modalReasignar').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                // var id = button.data('id'); 
+                // $(this).find('#inputEnrollmentId').val(id);
+            });
+        });
+    </script>
+}
