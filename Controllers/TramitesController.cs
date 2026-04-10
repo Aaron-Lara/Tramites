@@ -1,11 +1,18 @@
 ﻿using ControlEscolar.Data;
 using ControlEscolar.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ControlEscolar.Controllers
 {
@@ -15,17 +22,29 @@ namespace ControlEscolar.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public TramitesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
         }
         private int GetUserIdActual()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return int.TryParse(userIdClaim, out int id) ? id : 0;
+            }
+
+            // NOTA PARA PRUEBAS: Si tu usuario de Identity no existe en la tabla vieja, 
+            // cambia este '0' temporalmente por un ID de alumno que SÍ exista en tu BD 
+            // (por ejemplo: 2, 5 o 10) para que puedas ver los datos en pantalla.
+            return 0;
         }
+
+        // ==========================================
+        // VISTAS DEL ALUMNO
+        // ==========================================
         public IActionResult MisTramites()
         {
             int userIdActual = GetUserIdActual();
@@ -159,6 +178,7 @@ namespace ControlEscolar.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous] // <--- ¡AGREGA ESTO! (Permite entrar sin login temporalmente)
         public async Task<IActionResult> ObtenerRequisitosJson(int id)
         {
             var requisitos = await _context.Set<RequisitoSolicitudViewModel>()
@@ -254,6 +274,7 @@ namespace ControlEscolar.Controllers
             );
             return Ok(new { success = true });
         }
+
         [HttpPost]
         [RequestSizeLimit(104857600)]
         public async Task<IActionResult> SubsanarDocumento(int idDetalle, int idSolicitud, IFormFile archivoNuevo)
@@ -264,6 +285,8 @@ namespace ControlEscolar.Controllers
             var detalle = await _context.TramitesDetalleDocumentos
                 .FirstOrDefaultAsync(d => d.id_solicitud == idSolicitud && d.id_requisito == idDetalle);
 
+            // USAMOS LOS DBSETS REALES AQUÍ TAMBIÉN
+            var detalle = await _context.TramitesDetalleDocumentos.FirstOrDefaultAsync(d => d.id_solicitud == idSolicitud && d.id_requisito == idDetalle);
             var solicitud = await _context.TramitesSolicitudes.FindAsync(idSolicitud);
             var requisito = await _context.TramitesRequisitos.FindAsync(idDetalle);
 
