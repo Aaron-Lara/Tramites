@@ -121,72 +121,64 @@
                     <div class="bg-white p-0 rounded-4 shadow-sm border border-light overflow-hidden d-flex flex-column">
                         <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
                             <span class="text-dark fw-bold text-sm"><i class="bi bi-list-stars me-2"></i> Solicitudes Recientes</span>
+                            <div id="containerLength"></div>
                             <div id="contenedorBusqueda"></div>
                         </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-borderless align-middle mb-0" id="tablaAlumno" style="min-width: 800px;">
-                                <thead class="border-bottom text-muted">
-                                    <tr>
-                                        <th class="py-3 px-4 fw-bold text-xs" width="10%">FOLIO</th>
-                                        <th class="py-3 fw-bold text-xs" width="15%">FECHA</th>
-                                        <th class="py-3 fw-bold text-xs" width="35%">TIPO DE TRÁMITE</th>
-                                        <th class="py-3 fw-bold text-xs" width="30%">OBSERVACIONES</th>
-                                        <th class="py-3 px-4 text-center fw-bold text-xs" width="20%">ESTATUS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model != null && Model.Any())
-                                    {
-                                        @foreach (var item in Model)
-                                        {
-                                            bool tieneRechazos = item.Estatus.Equals("Rechazado", StringComparison.OrdinalIgnoreCase);
-                                            <tr class="border-bottom hover-bg-light transition-all">
-                                                <td class="px-4 py-3 text-primary fw-bold text-sm">#@item.Id</td>
-                                                <td class="text-muted text-xs">@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                                <td>
-                                                    <span class="text-dark fw-bold text-sm d-block">@item.Tipo</span>
-                                                </td>
-                                                <td style="max-width: 200px;">
-                                                    @if (!string.IsNullOrEmpty(item.Observaciones))
-                                                    {
-                                                        <div class="text-truncate-custom"
-                                                             style="cursor: pointer;"
-                                                             onclick="mostrarObservacionesCompletras('@item.Observaciones.Replace("'", "\\'")')">
-                                                            <span class="text-muted text-sm">@item.Observaciones</span>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted text-xs">Sin observaciones al momento.</span>
-                                                    }
-                                                </td>
-                                                <td class="px-4 text-center">
-                                                    @if (tieneRechazos)
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-white border shadow-sm px-3 py-2 text-danger fw-bold btn-detalle-alumno"
-                                                                data-id="@item.Id" data-id-tramite="@item.IdTramite" data-tipo="@item.Tipo"
-                                                                data-archivopath="@item.ArchivoPath" data-estatus="@item.Estatus">
-                                                            <i class="bi bi-exclamation-circle-fill me-1" style="font-size: 0.5rem;"></i> Corregir
-                                                        </button>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-white text-dark border shadow-sm px-3 py-2">
-                                                            <i class="bi bi-circle-fill @(item.Estatus == "Pendiente" ? "text-warning" : "text-success") me-1" style="font-size: 0.5rem; vertical-align: middle;"></i> @item.Estatus
-                                                        </span>
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr><td colspan="4" class="text-center py-5 text-muted">Aún no has realizado ninguna solicitud.</td></tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+<div class="table-responsive">
+    <table class="table table-borderless align-middle mb-0" id="tablaAlumno" style="min-width: 800px;">
+        <thead class="border-bottom text-muted">
+            <tr>
+                <th class="py-3 px-4 fw-bold text-xs" width="10%">FOLIO</th>
+                <th class="py-3 fw-bold text-xs" width="15%">FECHA</th>
+                <th class="py-3 fw-bold text-xs" width="35%">TIPO DE TRÁMITE</th>
+                <th class="py-3 fw-bold text-xs" width="25%">OBSERVACIONES</th>
+                <th class="py-3 px-4 text-center fw-bold text-xs" width="15%">ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    bool tieneRechazos = item.Estatus.Equals("Rechazado", StringComparison.OrdinalIgnoreCase);
+                    <tr class="border-bottom hover-bg-light transition-all">
+                        <td class="px-4 py-3 text-primary fw-bold text-sm">#@item.Id</td>
+                        <td class="text-muted text-xs">@item.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td><span class="text-dark fw-bold text-sm d-block">@item.Tipo</span></td>
+                        <td style="max-width: 200px;">
+                            @if (!string.IsNullOrEmpty(item.Observaciones))
+                            {
+                                <div class="text-truncate-custom" style="cursor: pointer;" onclick="mostrarObservacionesCompletras('@item.Observaciones.Replace("'", "\\'")')">
+                                    <span class="text-muted text-sm">@item.Observaciones</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted text-xs">Sin observaciones.</span>
+                            }
+                        </td>
+                        <td class="px-4 text-center">
+                            @if (tieneRechazos)
+                            {
+                                <button type="button" class="btn btn-sm btn-white border shadow-sm px-3 py-2 text-danger fw-bold btn-detalle-alumno" 
+                                        data-id="@item.Id" data-id-tramite="@item.IdTramite" data-tipo="@item.Tipo" 
+                                        data-archivopath="@item.ArchivoPath" data-estatus="@item.Estatus">
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i> Corregir
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="badge bg-white text-dark border shadow-sm px-3 py-2">
+                                    <i class="bi bi-circle-fill @(item.Estatus == "Pendiente" ? "text-warning" : "text-success") me-1" style="font-size: 0.5rem;"></i> @item.Estatus
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
                     </div>
                 </div>
             </div>
@@ -294,32 +286,73 @@
     }
 </style>
     <script>
-        $(document).ready(function () {
-        // 1. Inicializar DataTable
-const table = $('#tablaAlumno').DataTable({
-    language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    },
-    pageLength: 10,
-    order: [[0, 'desc']],
-    // 'rt' es la tabla. 
-    // <"d-flex justify-content-between align-items-center p-3 border-top" ip> 
-    // crea un contenedor flexible con padding y borde superior para la info y paginación.
-    dom: 'rt<"d-flex justify-content-between align-items-center p-3 border-top"ip>', 
-    initComplete: function() {
-        const searchInput = $('.dataTables_filter').detach();
-        $('#contenedorBusqueda').empty().append(searchInput);
-                
-        $('.dataTables_filter input')
-            .addClass('form-control form-control-sm border shadow-sm px-3')
-            .attr('placeholder', 'Buscar folio o trámite...')
-            .css('width', '250px');
-                    
-        $('.dataTables_filter label').contents().filter(function() {
-            return this.nodeType === 3;
-        }).remove();
-    }
-});
+$(document).ready(function () {
+    // Silenciamos errores visuales
+    $.fn.dataTable.ext.errMode = 'none'; 
+
+    const table = $('#tablaAlumno').DataTable({
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+            emptyTable: "Aún no hay solicitudes registradas.",
+            lengthMenu: "Mostrar _MENU_ registros"
+        },
+        pageLength: 10,
+        order: [[0, 'desc']],
+        autoWidth: false,
+        columnDefs: [
+            { targets: "_all", defaultContent: "" }
+        ],
+        // Agregamos 'l' al inicio para que cree el selector de registros
+        dom: 'lfrt<"d-flex justify-content-between align-items-center p-3 border-top"ip>', 
+        initComplete: function() {
+            // 1. Lógica para la BARRA DE BÚSQUEDA (Moverla a #contenedorBusqueda)
+            const searchInput = $('.dataTables_filter').detach();
+            $('#contenedorBusqueda').empty().append(searchInput);
+            
+            $('.dataTables_filter input')
+                .addClass('form-control form-control-sm border shadow-sm px-3')
+                .attr('placeholder', 'Buscar folio o trámite...')
+                .css('width', '250px');
+            
+if ($('.dataTables_filter').length) {
+    $('.dataTables_filter label').contents().filter(function() {
+        return this.nodeType === 3;
+    }).remove();
+}
+
+            // 2. Lógica para MOSTRAR REGISTROS (Moverla a #containerLength)
+            const lengthMenuOriginal = $('.dataTables_length').detach();
+            $('#containerLength').empty().append(lengthMenuOriginal);
+
+            // Ajuste de estilos para que queden en una sola línea (como en el admin)
+            $('.dataTables_length').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'gap': '8px',
+                'margin-bottom': '0'
+            });
+
+            $('.dataTables_length label').css({
+                'display': 'flex',
+                'align-items': 'center',
+                'gap': '8px',
+                'margin-bottom': '0',
+                'font-weight': 'bold'
+            });
+
+$('.dataTables_length select').addClass('form-select form-select-sm border shadow-sm')
+    .css({ 
+        'width': '70px',   
+        'height': '40px',
+        'font-size': '0.85rem' 
+    });
+        }
+    });
+
+    // Escuchar errores de conteo para que no interrumpan al usuario
+    $('#tablaAlumno').on('error.dt', function (e, settings, techNote, message) {
+        console.warn('DataTables count mismatch: ', message);
+    });
         // 1. Timeout de seguridad por si el servidor no responde
         setTimeout(() => {
         const loading = document.getElementById("infoAlumnoCargando");
@@ -612,21 +645,22 @@ html += `
         btnReemplazar.disabled = false;
         });
         }
-
-        // 6. Recargar la tabla si el alumno cierra el modal después de corregir algo
-        const modalElement = document.getElementById('modalAlumno');
-        if(modalElement) {
-        modalElement.addEventListener('hidden.bs.modal', function () {
+// 6. Recargar la tabla si el alumno cierra el modal después de corregir algo
+const modalElement = document.getElementById('modalAlumno');
+if (modalElement) {
+    modalElement.addEventListener('hidden.bs.modal', function () {
         window.location.reload();
-        });
-        function mostrarObservacionesCompletras(texto) {
-        if (!texto || texto === "null") return;
-        
-        document.getElementById('textoObservacionCompleto').innerText = texto;
-        var myModal = new bootstrap.Modal(document.getElementById('modalVerObservaciones'));
-        myModal.show();
-        }
-        }
+    });
+}
+
+// ESTA FUNCIÓN DEBE ESTAR FUERA DEL IF ANTERIOR
+function mostrarObservacionesCompletras(texto) {
+    if (!texto || texto === "null") return;
+    
+    document.getElementById('textoObservacionCompleto').innerText = texto;
+    var myModal = new bootstrap.Modal(document.getElementById('modalVerObservaciones'));
+    myModal.show();
+}
         function validarPDF(input) {
     if (input.files && input.files[0]) {
         const archivo = input.files[0];
