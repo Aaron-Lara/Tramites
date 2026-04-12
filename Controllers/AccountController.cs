@@ -73,6 +73,7 @@ namespace ControlEscolar.Controllers
             // Claims
             var claims = new List<Claim>
             {
+                new Claim("UserId", user.management_user_ID.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.management_user_ID.ToString()),
                 new Claim(ClaimTypes.Name, user.management_user_Email ?? "")
             };

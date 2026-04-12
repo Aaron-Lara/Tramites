@@ -22,25 +22,17 @@ namespace ControlEscolar.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly UserManager<IdentityUser> _userManager;
 
         public TramitesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
-            _userManager = userManager;
         }
         private int GetUserIdActual()
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             return int.TryParse(userIdClaim, out int id) ? id : 0;
             }
-
-            // NOTA PARA PRUEBAS: Si tu usuario de Identity no existe en la tabla vieja, 
-            // cambia este '0' temporalmente por un ID de alumno que SÍ exista en tu BD 
-            // (por ejemplo: 2, 5 o 10) para que puedas ver los datos en pantalla.
-            return 0;
-        }
 
         // ==========================================
         // VISTAS DEL ALUMNO
@@ -60,6 +52,12 @@ namespace ControlEscolar.Controllers
         [HttpGet]
         public async Task<IActionResult> ValidarMatricula()
         {
+            Console.WriteLine("IsAuthenticated: " + User.Identity.IsAuthenticated);
+            var debugClaims = User.Claims.Select(c => $"{c.Type} = {c.Value}").ToList();
+            foreach (var c in debugClaims)
+            {
+                Console.WriteLine(c);
+            }
             try
             {
                 int userId = GetUserIdActual();
@@ -258,7 +256,7 @@ namespace ControlEscolar.Controllers
             if (!System.IO.File.Exists(path)) return Json(new { success = false, message = "Archivo físico no encontrado", rutaBuscada = path });
 
             var fileBytes = await System.IO.File.ReadAllBytesAsync(path);
-            string extension = Path.GetExtension(doc.NombreArchivoFisico);
+            string extension = Path.GetExtension(doc.NombreArchivoFisico ?? "");
             return File(fileBytes, "application/octet-stream", $"{doc.NombreRequisito.Replace(" ", "_")}_{matricula}_{DateTime.Now:yyyyMMdd_HHmmss}{extension}");
         }
 
@@ -267,7 +265,7 @@ namespace ControlEscolar.Controllers
         {
             int idSol = data.GetProperty("idSolicitud").GetInt32();
             int idReq = data.GetProperty("idRequisito").GetInt32();
-            string estatus = data.GetProperty("estatus").GetString();
+            string estatus = data.GetProperty("estatus").GetString() ?? "Pendiente";
 
             await _context.Database.ExecuteSqlInterpolatedAsync(
                 $"EXEC sp_tramites @Option='tramites_detalle_documento_actualizar_estatus', @ID={idSol}, @RequisitoID={idReq}, @Estatus={estatus}"
@@ -282,10 +280,6 @@ namespace ControlEscolar.Controllers
             if (archivoNuevo == null || archivoNuevo.Length == 0) return Json(new { success = false, message = "Archivo no seleccionado." });
 
             // 1. Buscamos el detalle (Usando el nombre de clase correcto: DetalleDocumentos)
-            var detalle = await _context.TramitesDetalleDocumentos
-                .FirstOrDefaultAsync(d => d.id_solicitud == idSolicitud && d.id_requisito == idDetalle);
-
-            // USAMOS LOS DBSETS REALES AQUÍ TAMBIÉN
             var detalle = await _context.TramitesDetalleDocumentos.FirstOrDefaultAsync(d => d.id_solicitud == idSolicitud && d.id_requisito == idDetalle);
             var solicitud = await _context.TramitesSolicitudes.FindAsync(idSolicitud);
             var requisito = await _context.TramitesRequisitos.FindAsync(idDetalle);
